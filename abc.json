@@ -1,0 +1,14 @@
+{
+    "name": "pwdstrength",
+    "version": "1.0",
+    "desc": "",
+    "cover": "",
+    "tag":"密码",
+    "author": {
+        "name": "弘树",
+        "email": "tiehang.lth@alibaba-inc.com",
+        "page": ""
+    },
+    "type": "kissy-gallery",
+    "type-url": "http://gallery.kissyui.com/guide"
+}
