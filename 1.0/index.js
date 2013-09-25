@@ -354,6 +354,7 @@ KISSY.add(function (S, Node,Base) {
          */
         onblur: {
             value: function(node){
+                var self = this;
                 if((self.get('renderType') == 'popup') && node){
                     node.hide();
                 }

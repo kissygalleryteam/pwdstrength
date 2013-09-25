@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ÌÔ±¦×¢²áÒ³Demo</title>
+    <title>æ·˜å®æ³¨å†Œé¡µDemo</title>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="http://a.tbcdn.cn//??p/global/1.0/global-min.css,p/global/1.0/header-min.css?t=20130608.css">
     <link rel="stylesheet" href="http://g.tbcdn.cn//tb/register/1.1.1/common/css/reg.css?t=20130313">
     <script src="http://g.tbcdn.cn/kissy/k/1.3.0/kissy-min.js" charset="utf-8"></script>
@@ -9,7 +10,7 @@
 <body>
     <form id="taobao">
         <div class="kv-item kv-nick">
-            <span class="kv-label"><label for="J_Nick">»áÔ±Ãû£º</label></span>
+            <span class="kv-label"><label for="J_Nick">ä¼šå‘˜åï¼š</label></span>
             <input class="i-text" id="J_Nick" name="_fm.n._0.n" value="" type="text">
 
             <div class="msg-box">
@@ -23,13 +24,13 @@
             </div>
             <div class="num-tip" id="J_NumTip"></div>
             <div class="nick-suggest" id="J_NickSuggest" style="display: none;">
-                <span class="nick-suggest-tit">ÍÆ¼öÄãÊ¹ÓÃ£º</span>
+                <span class="nick-suggest-tit">æ¨èä½ ä½¿ç”¨ï¼š</span>
                 <ul id="J_NickSuggestList">
                 </ul>
             </div>
         </div>
         <div class="kv-item">
-            <span class="kv-label"><label for="J_Pwd">µÇÂ¼ÃÜÂë£º</label></span>
+            <span class="kv-label"><label for="J_Pwd">ç™»å½•å¯†ç ï¼š</label></span>
             <input class="i-text" id="J_Pwd" name="_fm.n._0.p" type="password" value="">
 
             <div class="msg-box">
@@ -37,7 +38,7 @@
                     <i></i>
 
                     <div class="msg-cnt">
-                        ÇëÌîĞ´µÇÂ¼ÃÜÂë
+                        è¯·å¡«å†™ç™»å½•å¯†ç 
 
                     </div>
                 </div>
@@ -45,7 +46,7 @@
 
             <div class="pw-strength pw-weak" id="J_PwdStrength">
                 <div class="pw-bar"></div>
-                <div class="pw-letter"><span>Èõ</span><span>ÖĞ</span><span>Ç¿</span></div>
+                <div class="pw-letter"><span>å¼±</span><span>ä¸­</span><span>å¼º</span></div>
             </div>
         </div>
     </form>
@@ -67,14 +68,14 @@
 
         S.use('gallery/pwdstrength/1.0/index', function (S, PwdStrength) {
 
-            // ÌÔ±¦°æ
+            // æ·˜å®ç‰ˆ
             var pwdStrength = new PwdStrength({
                 triggerNode: '#J_Pwd ',
                 rule: [85, 30, 0],
                 needRender: false,
                 onchange: function (level) {
-                    // ·µ»ØµÄlevelÖµÎª0,1,2, ¶ÔÓ¦¸÷¸ö¼¶±ğ
-                    // ·µ»Ø-1±íÊ¾Îª¿Õ£¬ÌÔ±¦´¦Àí·½Ê½ÈÔÏÔÊ¾Îª"Èõ"
+                    // è¿”å›çš„levelå€¼ä¸º0,1,2, å¯¹åº”å„ä¸ªçº§åˆ«
+                    // è¿”å›-1è¡¨ç¤ºä¸ºç©ºï¼Œæ·˜å®å¤„ç†æ–¹å¼ä»æ˜¾ç¤ºä¸º"å¼±"
                     var levelCls = ['pw-weak', 'pw-medium', 'pw-strong'],
                         target = S.one('#J_PwdStrength'),
                         level = (level <= 0) ? 0 : level;
