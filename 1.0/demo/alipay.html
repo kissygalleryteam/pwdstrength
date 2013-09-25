@@ -65,7 +65,7 @@
                 cls: 'high',
                 text: '高'
             }];
-            new PwdStrength({
+            var pwdStrength = new PwdStrength({
                 triggerNode: '#queryPwd',
                 rule: [85, 50, 30, 0],
                 renderType: 'popup',
@@ -75,7 +75,7 @@
                     var self = this,
                             strengthBarCls = 'ui-pwd-strength',
                             termsCls = 'pwdStrength-item-';
-                    if(self.password != ""){
+                    if(self.size() > 0){
 
                         // 更新安全强度展示
                         var result = pwdStatusMap[level];
@@ -97,6 +97,8 @@
                         });
 
                     }else{
+
+                        // 输入密码为空，重置提示
                         node.one('.' + strengthBarCls).attr('class', strengthBarCls);
                         node.one('.ui-pwd-strength-word').text('');
                         node.one('.pwdStrength').all('li').each(function(item, idx){
@@ -108,6 +110,8 @@
 
                 }
             });
+
+            S.log(pwdStrength.isAllSame());
 
         });
     </script>

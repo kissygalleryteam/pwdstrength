@@ -50,17 +50,9 @@ KISSY.add(function (S, Node,Base) {
                     case 'popup':
 
                         // 插入到body尾部，根据input节点位置进行定位
-                        var offset = triggerNode.offset(),
-                            width = triggerNode.innerWidth(),
-                            height = triggerNode.innerHeight(),
-                            MARGIN = 15;
-
                         $(document.body).append(boundingBox);
 
-                        boundingBox.css({
-                            left: offset.left + width + MARGIN,
-                            top: offset.top + (height - boundingBox.innerHeight()) / 2
-                        });
+                        self.locatePopup(triggerNode, boundingBox);
 
                         break;
 
@@ -73,6 +65,27 @@ KISSY.add(function (S, Node,Base) {
 
             }
 
+        },
+
+        /**
+         * 定位popup位置
+         * @param triggerNode
+         * @param boundingBox
+         */
+        locatePopup: function(triggerNode, boundingBox){
+
+            var offset = triggerNode.offset(),
+                width = triggerNode.innerWidth(),
+                height = triggerNode.innerHeight(),
+                MARGIN = 15;
+
+            boundingBox.css({
+                left: offset.left + width + MARGIN,
+                top: offset.top + (height - boundingBox.innerHeight()) / 2
+            });
+
+            // 保存当前input节点的offset值，便于之后确认是否重新定位
+            self.curOffset = triggerNode.offset();
         },
 
         bindEvent: function(){
@@ -320,6 +333,12 @@ KISSY.add(function (S, Node,Base) {
                         'backgroundColor': '#' + transColor.join('')
                     });
 
+                    // 检测是否input节点位置发生变化，如果发生变化重定位popup
+                    var triggerNode = self.get('triggerNode');
+                    if(!S.equals(self.curOffset, triggerNode.offset())){
+                        self.locatePopup(triggerNode, self.boundingBox);
+                    }
+
                     node.show();
                 };
 
@@ -335,7 +354,9 @@ KISSY.add(function (S, Node,Base) {
          */
         onblur: {
             value: function(node){
-                node && node.hide();
+                if((self.get('renderType') == 'popup') && node){
+                    node.hide();
+                }
             }
         }
 

@@ -68,17 +68,21 @@
         S.use('gallery/pwdstrength/1.0/index', function (S, PwdStrength) {
 
             // 淘宝版
-            new PwdStrength({
+            var pwdStrength = new PwdStrength({
                 triggerNode: '#J_Pwd ',
                 rule: [85, 30, 0],
                 needRender: false,
                 onchange: function (level) {
                     // 返回的level值为0,1,2, 对应各个级别
+                    // 返回-1表示为空，淘宝处理方式仍显示为"弱"
                     var levelCls = ['pw-weak', 'pw-medium', 'pw-strong'],
-                        target = S.one('#J_PwdStrength');
+                        target = S.one('#J_PwdStrength'),
+                        level = (level <= 0) ? 0 : level;
                     target.removeClass(levelCls.join(' ')).addClass(levelCls[level]);
                 }
             });
+
+            S.log(pwdStrength.isAllSame());
 
         })
     </script>
