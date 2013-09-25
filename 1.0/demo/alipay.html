@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>淘宝注册页Demo</title>
+    <link rel="stylesheet" href="https://a.alipayobjects.com/memberprod/memberprod.authreg-1.2.css">
+    <link rel="stylesheet" href="alipay.css">
+    <script src="http://g.tbcdn.cn/kissy/k/1.3.0/kissy-min.js" charset="utf-8"></script>
+</head>
+<body>
+<form id="alipay" class="ui-form ui-form-bg">
+    <fieldset>
+        <legend>补全信息</legend>
+        <div class="ui-form-dashed"></div>
+        <h3 class="ui-form-title ui-form-title-first"><strong>设置登录密码</strong><span class="explain">登录时需验证，保护账户信息</span></h3>
+
+        <input type="hidden" name="modifyLoginPwd" value="1">
+        <div class="ui-form-item  fn-hide " id="J-changePwdLink">
+            <label for="queryPwd" class="ui-label">登录密码</label>
+            <span class="ui-text">与注册淘宝的密码相同&nbsp;&nbsp;<a id="J-changeQueryPwd" href="javascript:;" seed="JChangePwdLink-JChangeQueryPwd" smartracker="on">修改</a></span>
+        </div>
+        <div class="ui-form-item" style="z-index: 97;">
+            <label for="queryPwd" class="ui-label">登录密码</label>
+            <input autocomplete="off" class="ui-input" type="password" id="queryPwd" name="queryPwd">
+        </div>
+    </fieldset>
+</form>
+    <script>
+        var S = KISSY;
+        if (S.Config.debug) {
+            var srcPath = "../../../";
+            S.config({
+                packages: [
+                    {
+                        name: "gallery",
+                        path: srcPath,
+                        charset: "utf-8",
+                        ignorePackageNameInUri: true
+                    }
+                ]
+            });
+        }
+
+        S.use('gallery/pwdstrength/1.0/index', function (S, PwdStrength) {
+
+            // 支付宝版
+            var html = '<div class="pwdStrengthWrap">安全程度：<div id="queryPwdStrengthWrap">' +
+                    '<ul class="ui-pwd-strength ui-pwd-strength-low">' +
+                    '<li class="ui-pwd-strength-item ui-pwd-strength-item-1"></li>' +
+                    '<li class="ui-pwd-strength-item ui-pwd-strength-item-2"></li>' +
+                    '<li class="ui-pwd-strength-item ui-pwd-strength-item-3"></li>' +
+                    '<li class="ui-pwd-strength-word">低</li>' +
+                    '</ul></div></div>' +
+                    '<ul class="pwdStrength">' +
+                    '<li class="pwdStrength-item-1">6-20位字符</li>' +
+                    '<li class="pwdStrength-item-2">只能包含大小写字母、数字以及标点符号（除空格）</li>' +
+                    '<li class="pwdStrength-item-3">大写字母、小写字母、数字和标点符号至少包含2种</li>' +
+                    '</ul>';
+            var pwdStatusMap = [{
+                cls: 'low',
+                text: '低'
+            },{
+                cls: 'mid',
+                text: '中'
+            },{
+                cls: 'high',
+                text: '高'
+            }];
+            new PwdStrength({
+                triggerNode: '#queryPwd',
+                rule: [85, 50, 30, 0],
+                renderType: 'popup',
+                html: html,
+                onchange: function(level, node){
+
+                    var self = this,
+                            strengthBarCls = 'ui-pwd-strength',
+                            termsCls = 'pwdStrength-item-';
+                    if(self.password != ""){
+
+                        // 更新安全强度展示
+                        var result = pwdStatusMap[level];
+                        node.one('.' + strengthBarCls).attr('class', strengthBarCls + ' ' + strengthBarCls + '-' + result.cls);
+                        node.one('.ui-pwd-strength-word').text(result.text).show();
+
+                        // 更新密码tips
+                        var size = self.size();
+                        var isIllegal = !self.isIllegal();
+                        var hasLetter = self.hasLetter() ? (self.hasLowerAndUpperLetter() ? 2 : 1) : 0,
+                                hasNumber = self.hasNumber() && 1,
+                                hasCharacter = self.hasCharacter() && 1;
+                        var terms = [(size > 5 && size < 21), isIllegal, (hasLetter + hasNumber + hasCharacter) > 1],
+                                statusCls = ['green', 'red'];
+                        S.each(terms, function(val, idx){
+                            var curNodeCls = termsCls + (idx + 1),
+                                    stCls = statusCls[val ? 0 : 1];
+                            node.one('.' + curNodeCls).attr('class', curNodeCls + ' ' + termsCls + stCls);
+                        });
+
+                    }else{
+                        node.one('.' + strengthBarCls).attr('class', strengthBarCls);
+                        node.one('.ui-pwd-strength-word').text('');
+                        node.one('.pwdStrength').all('li').each(function(item, idx){
+                            item.attr('class', termsCls + (idx + 1));
+                        })
+                    }
+
+                    node.show();
+
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

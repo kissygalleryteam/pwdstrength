@@ -18,6 +18,7 @@ KISSY.add(function (S, Node,Base) {
         Pwdstrength.superclass.constructor.call(self, comConfig);
         self.init();
     }
+
     S.extend(Pwdstrength, Base, /** @lends Pwdstrength.prototype*/{
 
         init: function(){
@@ -26,6 +27,9 @@ KISSY.add(function (S, Node,Base) {
             self.bindEvent();
         },
 
+        /**
+         * 根据renderType选择对应的dom渲染方法
+         */
         renderUI: function(){
             var self = this,
                 needRender = self.get('needRender'),
@@ -36,27 +40,26 @@ KISSY.add(function (S, Node,Base) {
                     boundingBox = $(html),
                     renderType = self.get('renderType');
 
-
                 switch(renderType){
 
                     case 'insert':
 
+                        // 直接插入节点到input节点后
                         triggerNode.after(boundingBox);
                         break;
                     case 'popup':
 
+                        // 插入到body尾部，根据input节点位置进行定位
                         var offset = triggerNode.offset(),
-                            width = triggerNode.outerWidth(),
-                            height = triggerNode.outerHeight(),
-                            MARGIN = 10;
+                            width = triggerNode.innerWidth(),
+                            height = triggerNode.innerHeight(),
+                            MARGIN = 15;
 
                         $(document.body).append(boundingBox);
 
                         boundingBox.css({
-                            position: 'absolute',
-                            display: 'none',
                             left: offset.left + width + MARGIN,
-                            top: offset.top + (height - boundingBox.height()) / 2
+                            top: offset.top + (height - boundingBox.innerHeight()) / 2
                         });
 
                         break;
@@ -68,7 +71,6 @@ KISSY.add(function (S, Node,Base) {
 
                 this.boundingBox = boundingBox;
 
-
             }
 
         },
@@ -77,31 +79,29 @@ KISSY.add(function (S, Node,Base) {
             var self = this,
                 triggerNode = self.get('triggerNode'),
                 needRender = self.get('needRender'),
-                boundingBox = self.boundingBox,
-                onchange = self.get('onchange'),
-                onblur = self.get('onblur');
-            if(S.isFunction(onchange)){
+                boundingBox = self.boundingBox;
 
-                triggerNode.on('change keypress paste focus textInput input', function(){
+            // 响应onchange事件，可自定义
+            triggerNode.on('change keypress paste focus textInput input', function(){
 
-                    var val = $(this).val(),
-                        level = 0;
+                var val = $(this).val();
+                self.password = val;
 
-                    if(val != EMPTY){
+                // 计算当前密码强度级别，输入为空时返回-1，反之返回1+
+                var level = (val != EMPTY) ? self.level() : -1;
 
-                        self.password = $(this).val();
-                        level = self.level();
-                    }
+                // 调用内置/自定义onchange函数响应强度变化
+                var onchange = self.get('onchange');
+                S.isFunction(onchange) && onchange.call(self, level, boundingBox);
+            });
 
-                    onchange.call(self, level, boundingBox);
-                });
-            }
-            if(S.isFunction(onblur)){
+            // 响应onblur事件，可自定义
+            triggerNode.on('focusout blur', function(){
 
-                triggerNode.on('focusout blur', function(){
-                    onblur.call(self, boundingBox);
-                });
-            }
+                // 调用内置/自定义onblur函数
+                var onblur = self.get('onblur');
+                S.isFunction(onblur) && onblur.call(self, boundingBox);
+            });
 
         },
 
@@ -121,14 +121,11 @@ KISSY.add(function (S, Node,Base) {
 
         /**
          * 计算强度级别
-         * @returns {*} 级别(0, 1, 2, ...)
+         * @returns {*} 级别(0, 1, 2, ...)代表(低, 中, 高, ...)
          */
         level : function () {
             var self = this,
                 totalScore = 0;
-            if (self.isIllegal()){
-                return totalScore;
-            }
 
             // 长度：[0, 4]: +5; [5, 7]: +10; [8, ]: +25
             var length = this.size();
@@ -160,9 +157,14 @@ KISSY.add(function (S, Node,Base) {
 
             var rules = self.get('rule');
             S.each(rules, function(val, idx){
+                var pos = rules.length - (idx + 1);
                 if(totalScore > val){
-                    totalScore = rules.length - (idx + 1);
+                    // 返回得分对应所在区间的序号，即level
+                    totalScore = pos;
                     return false;
+                }else if(pos == 0){
+                    // 如果得分低于下限，返回-1
+                    totalScore = -1;
                 }
             });
 
@@ -201,6 +203,23 @@ KISSY.add(function (S, Node,Base) {
         },
         hasCharacter : function () {
             return (this.password.match(this.regex.character) || []).length
+        },
+
+        /**
+         * 转换颜色字符串到颜色数组[RED, GREEN, BLUE]
+         */
+        _transColorToArr: function(val){
+            if(/#[a-fA-F0-9]{6}/.test(val)){
+
+                var result = [];
+                for(var i = 1; i < 6; i += 2){
+                    result.push(parseInt(val.substring(i, i + 2), 16));
+                }
+                return result;
+            }else{
+                S.log('Invalid color set, please check and retry!');
+                return false;
+            }
         }
 
     }, {ATTRS : /** @lends Pwdstrength*/{
@@ -220,7 +239,7 @@ KISSY.add(function (S, Node,Base) {
         },
 
         html: {
-            value: '<div class="pwdstrength-popup"><em class="popup-arrow"></em><div class="popup-content">' +
+            value: '<div class="pwdstrength-popup"><em class="popup-arrow"></em><em class="popup-arrow-padding"></em><div class="popup-content">' +
                 '<div class="pwdstrength-wrap">密码强度：' +
                 '<span class="strenth-wrap"><span class="strength-bar"></span></span>' +
                 '</div></div></div>',
@@ -230,7 +249,7 @@ KISSY.add(function (S, Node,Base) {
                     renderType = self.get('renderType');
 
                 if(needRender && (renderType == 'popup')){
-                    val = '<div class="pwdstrength-popup"><em class="popup-arrow"></em><div class="popup-content">' +
+                    val = '<div class="pwdstrength-popup"><em class="popup-arrow"></em><em class="popup-arrow-padding"></em><div class="popup-content">' +
                         val + '</div></div>';
                 }
                 return val;
@@ -264,46 +283,62 @@ KISSY.add(function (S, Node,Base) {
             }
         },
 
+        beginColor: {
+            value: '#bd5151'
+        },
+
+        endColor: {
+            value: '#1fa542'
+        },
+
+        /**
+         * 默认的onchange实现，基于popup形式
+         */
         onchange: {
             value: function(level, node){
 
-                var RED = [255, 0, 0],
-                    GREEN = [31, 165, 66],
+                var self = this,
+                    transColorFunc = self._transColorToArr,
+                    beginColor = transColorFunc(self.get('beginColor')),
+                    endColor = transColorFunc(self.get('endColor')),
                     transColor = [];
 
-                var self = this,
-                    totalWidth = node.one('.strenth-wrap').width(),
-                    grades = self.get('rule').length,
-                    percent = level / grades;
+                var totalWidth = node.one('.strenth-wrap').width(),
+                    grades = self.get('rule').length;
 
-                for(var i = 0; i < 3; i++){
-                    transColor[i] = parseInt(RED[i] - (RED[i] - GREEN[i]) * percent);
-                }
+                var onchange = function(level, node){
+                    var colorPercent = level / (grades - 1),
+                        widthPercent = (level + 1) / grades;
 
-                function transVal(v){
-                    return v > 16 ? v.toString(16) : ('0' + v.toString(16));
-                }
+                    for(var i = 0; i < 3; i++){
+                        var value = parseInt(beginColor[i] - (beginColor[i] - endColor[i]) * colorPercent);
+                        transColor[i] = value > 16 ? value.toString(16) : ('0' + value.toString(16));
+                    }
 
-                var x = '';
-                S.each(transColor, function(val){
-                    x += transVal(val);
-                });
+                    node.one('.strength-bar').css({
+                        'width':  totalWidth * widthPercent + 'px',
+                        'backgroundColor': '#' + transColor.join('')
+                    });
 
-                node.one('.strength-bar').css({
-                    'width':  totalWidth * percent + 'px',
-                    'backgroundColor': '#' + x
-                });
+                    node.show();
+                };
 
-                node.show();
+                onchange(level, node);
+
+                self.set('onchange', onchange);
+
             }
         },
 
+        /**
+         * 对于popup类型的tip关闭显示
+         */
         onblur: {
             value: function(node){
-                node.hide();
+                node && node.hide();
             }
         }
 
     }});
     return Pwdstrength;
-}, {requires:['node', 'base', 'event']});
+}, {requires:['node', 'base', 'event', './index.css']});
