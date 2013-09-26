@@ -53,13 +53,12 @@ KISSY.add('gallery/pwdstrength/1.0/index',function (S, Node,Base) {
                         // 直接插入节点到input节点后
                         triggerNode.after(boundingBox);
                         break;
+
                     case 'popup':
 
                         // 插入到body尾部，根据input节点位置进行定位
                         $(document.body).append(boundingBox);
-
                         self.locatePopup(triggerNode, boundingBox);
-
                         break;
 
                     default:
@@ -67,10 +66,9 @@ KISSY.add('gallery/pwdstrength/1.0/index',function (S, Node,Base) {
 
                 }
 
+                // 挂载boundingBox以备change用
                 this.boundingBox = boundingBox;
-
             }
-
         },
 
         /**
@@ -253,10 +251,18 @@ KISSY.add('gallery/pwdstrength/1.0/index',function (S, Node,Base) {
             }
         },
 
+        /**
+         * 指定强度级别规则
+         * @array 从高到低依次指定各个强度级别的得分门槛值
+         */
         rule: {
             value: [70, 30, 0]
         },
 
+        /**
+         * 指定强度提示信息的html内容
+         * 对于popup类型，自动包装popup外层
+         */
         html: {
             value: '<div class="pwdstrength-popup"><em class="popup-arrow"></em><em class="popup-arrow-padding"></em><div class="popup-content">' +
                 '<div class="pwdstrength-wrap">密码强度：' +
@@ -302,10 +308,16 @@ KISSY.add('gallery/pwdstrength/1.0/index',function (S, Node,Base) {
             }
         },
 
+        /**
+         * 默认的强度提示条提示强度最弱时的颜色
+         */
         beginColor: {
             value: '#bd5151'
         },
 
+        /**
+         * 默认的强度提示条提示强度最强时的颜色
+         */
         endColor: {
             value: '#1fa542'
         },
@@ -356,7 +368,6 @@ KISSY.add('gallery/pwdstrength/1.0/index',function (S, Node,Base) {
 
                 // 重设onchange方法
                 self.set('onchange', onchange);
-
             }
         },
 
