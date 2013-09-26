@@ -1,7 +1,7 @@
 {
     "name": "pwdstrength",
     "version": "1.0",
-    "desc": "",
+    "desc": "密码强度提示组件，可配置规则和提示信息",
     "cover": "",
     "tag":"密码",
     "author": {
