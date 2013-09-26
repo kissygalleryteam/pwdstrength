@@ -110,7 +110,7 @@ pwdstrength是基于Kissy的密码强度提示组件，支持自行定制提示�
             }
 * onblur
 	* `Function` 
-	* 指定输入节点失去交点时的方法，对于popup类型，需hide强度信息提示节点
+	* 指定输入节点失去焦点时的方法，对于popup类型，需hide强度信息提示节点
 	* 默认值：
 	 
 			function(node){
