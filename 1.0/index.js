@@ -153,7 +153,7 @@ KISSY.add(function (S, Node,Base) {
             var hasNumber = this.hasNumber();
             hasNumber >= 3 ? totalScore += 20 : hasNumber && (totalScore += 10);
 
-            // 字符[2, ]: +25; [1]: +10
+            // 符号[2, ]: +25; [1]: +10
             var hasCharacter = this.hasCharacter();
             hasCharacter >= 3 ? totalScore += 25 : hasCharacter && (totalScore += 10);
 
@@ -161,10 +161,10 @@ KISSY.add(function (S, Node,Base) {
             // 字母 + 数字 + 字符: +5
             // 字母、数字、字符中3选2: +2
             if(hasLowerAndUpperLetter && hasNumber && hasCharacter){
-                totalScore += 10;
-            }else if(hasLetter && hasNumber && hasCharacter){
                 totalScore += 5;
-            }else if(hasLetter && hasNumber || hasLetter && hasCharacter || hasNumber && hasCharacter){
+            }else if(hasLetter && hasNumber && hasCharacter){
+                totalScore += 3;
+            }else if((hasLetter && 1) + (hasNumber && 1) + (hasCharacter && 1) > 1){
                 totalScore += 2;
             }
 
@@ -319,10 +319,14 @@ KISSY.add(function (S, Node,Base) {
                 var totalWidth = node.one('.strenth-wrap').width(),
                     grades = self.get('rule').length;
 
+                // onchange方法缓存之前的变量值，加快下次执行效率
                 var onchange = function(level, node){
+
+                    // 颜色百分比和长度百分比不一样，需分别计算
                     var colorPercent = level / (grades - 1),
                         widthPercent = (level + 1) / grades;
 
+                    // 根据起始颜色和level计算当前level对应的颜色，根据rgb颜色过渡算法
                     for(var i = 0; i < 3; i++){
                         var value = parseInt(beginColor[i] - (beginColor[i] - endColor[i]) * colorPercent);
                         transColor[i] = value > 16 ? value.toString(16) : ('0' + value.toString(16));
@@ -344,6 +348,7 @@ KISSY.add(function (S, Node,Base) {
 
                 onchange(level, node);
 
+                // 重设onchange方法
                 self.set('onchange', onchange);
 
             }
