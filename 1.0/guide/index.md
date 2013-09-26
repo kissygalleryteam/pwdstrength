@@ -14,6 +14,8 @@ pwdstrength是基于Kissy的密码强度提示组件，支持自行定制提示�
          });
     })
 
+更个性化的配置参考[demo页面](http://gallery.kissyui.com/pwdstrength/1.0/demo/index.html)
+
 ## API说明
 
 * 密码强度规则参考Google的设计，根据密码的构成特点进行计分，得分越高表明强度越强
