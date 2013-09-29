@@ -29,6 +29,7 @@ KISSY.add('gallery/pwdstrength/1.0/index',function (S, Node,Base) {
 
         init: function(){
             var self = this;
+            self.password = EMPTY;
             self.renderUI();
             self.bindEvent();
         },
