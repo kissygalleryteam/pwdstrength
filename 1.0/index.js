@@ -23,6 +23,7 @@ KISSY.add(function (S, Node,Base) {
 
         init: function(){
             var self = this;
+            self.password = EMPTY;
             self.renderUI();
             self.bindEvent();
         },
